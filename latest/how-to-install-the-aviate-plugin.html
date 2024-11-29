@@ -138,6 +138,9 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 <p>This section lists the steps to be followed for the Aviate plugin installation.</p>
 </div>
 <div class="paragraph">
+<p>Before staring with the plugin installation, ensure that you have a running KB installation as documented <a href="https://docs.killbill.io/latest/getting_started">here</a>.</p>
+</div>
+<div class="paragraph">
 <p><strong>Step 1 - Install Plugin</strong></p>
 </div>
 <div class="paragraph">
@@ -187,7 +190,24 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 <p>Replace <code>&lt;token&gt;</code> with your cloudsmith token. Replace <code>&lt;version&gt;</code> with the plugin version to be installed. This should be something like <code>1.0.12</code>.</p>
 </div>
 <div class="paragraph">
-<p><strong>Step 2 - Start the Plugin</strong></p>
+<p><strong>Step 2 - Create Plugin Database Tables</strong></p>
+</div>
+<div class="paragraph">
+<p>In order to create the plugin tables, run the <a href="https://docs.killbill.io/latest/aviate-mysql-ddl.sql">Aviate MySQL DDL</a> or <a href="https://docs.killbill.io/latest/aviate-postgresql-ddl.sql">Aviate PostgreSQL DDL</a> depending on your database.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively, you can let Flyway handle the database table creation for you. For this you need to ensure that KB is started with the following property:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>com.killbill.billing.plugin.aviate.enableMigrations<span class="tok-o">=</span><span class="tok-nb">true</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Refer to the <a href="https://docs.killbill.io/latest/userguide_configuration.html"><em>Kill Bill Configuration Guide</em></a> to know more about setting configuration properties.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 3 - Start the Plugin</strong></p>
 </div>
 <div class="paragraph">
 <p>In order to start the plugin, run the following <code>curl</code> command:</p>
@@ -213,7 +233,7 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Step 3 - Verify that the plugin is running</strong></p>
+<p><strong>Step 4 - Verify that the plugin is running</strong></p>
 </div>
 <div class="paragraph">
 <p>Run the following <code>curl</code> command:</p>
@@ -260,6 +280,17 @@ http://127.0.0.1:8080/1.0/kb/nodesInfo</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_faqs">FAQs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>What is the aviate plugin not started even after following the steps above? </strong></p>
+</div>
+<div class="paragraph">
+<p>One of the possible reasons for the plugin startup failure is that the aviate database tables are not present. If you are using Flyway to create the tables, sometimes an error can occur while running the migrations. The KB logs should be able to provide more details.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_further_reading">Further Reading</h2>
 <div class="sectionbody">
 <div class="ulist">
@@ -268,7 +299,7 @@ http://127.0.0.1:8080/1.0/kb/nodesInfo</code></pre>
 <p>Aviate Overview</p>
 </li>
 <li>
-<p>Aviate Catalog Plugin</p>
+<p><a href="https://docs.killbill.io/latest/aviate-catalog-plugin">Aviate Catalog Plugin</a></p>
 </li>
 </ul>
 </div>
