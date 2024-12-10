@@ -488,6 +488,65 @@ allowing database access. The database hostname can be obtained from the RDSClus
 </div>
 </div>
 <div class="sect1">
+<h2 id="_update_configuration">Update Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To update the Kill Bill configuration parameters, select the CloudFormation stack and click on <strong>Update</strong>. The update stack consists of the following 4 steps:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Step 1 - Update stack: select <strong>Use current template</strong> and click Next</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://github.com/vnandwana/killbill-docs/raw/v3/userguide/assets/aws/cf-update-config-step1.JPG" alt="cf update config step1">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Step 2 - Specify stack details: update any of the parameters and click Next</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://github.com/vnandwana/killbill-docs/raw/v3/userguide/assets/aws/cf-update-config-step2.JPG" alt="cf update config step2">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Step 3 - Configure stack options: no changes are needed at this step</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://github.com/vnandwana/killbill-docs/raw/v3/userguide/assets/aws/cf-update-config-step3.JPG" alt="cf update config step3">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Step 4 - Review: review all the changes made to the parameters, scroll down and check <strong>I acknowledge that AWS CloudFormation might create IAM resources</strong> and click on <strong>Submit</strong>.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://github.com/vnandwana/killbill-docs/raw/v3/userguide/assets/aws/cf-update-config-step4b.JPG" alt="cf update config step4b">
+</div>
+</div>
+<div class="paragraph">
+<p>CloudFormation stack will start updating all these configurations, and upon completion, its status will change to <strong>UPDATE_COMPLETE</strong>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_maintenance">Maintenance</h2>
 <div class="sectionbody">
 <div class="paragraph">
