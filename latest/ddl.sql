@@ -650,6 +650,7 @@ CREATE UNIQUE INDEX invoices_id ON invoices(id);
 CREATE INDEX invoices_account ON invoices(account_id ASC);
 CREATE INDEX invoices_tenant_account_record_id ON invoices(tenant_record_id, account_record_id);
 CREATE INDEX invoice_grp_id ON invoices(grp_id ASC);
+CREATE INDEX invoice_account_record_id_record_id ON invoices(account_record_id, record_id);
 
 
 DROP TABLE IF EXISTS invoice_history;
@@ -674,7 +675,7 @@ CREATE TABLE invoice_history (
 ) /*! CHARACTER SET utf8 COLLATE utf8_bin */;
 CREATE INDEX invoice_history_target_record_id ON invoice_history(target_record_id);
 CREATE INDEX invoice_history_tenant_record_id ON invoice_history(tenant_record_id);
-
+CREATE INDEX invoice_history_account_record_id_record_id ON invoice_history(account_record_id, record_id);
 
 DROP TABLE IF EXISTS invoice_payments;
 CREATE TABLE invoice_payments (
