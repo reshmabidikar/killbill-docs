@@ -160,6 +160,337 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 </div>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_aviate_metrics">Aviate Metrics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Aviate plugin provides a <a href="https://killbill.github.io/slate/aviate-health-apis.html#retrieve-metrics">Retrieve Metrics</a> endpoint that can be used to assess the health of the system.</p>
+</div>
+<div class="paragraph">
+<p>This section provides some insights into the metrics that can be retrieved via this endpoint.</p>
+</div>
+<div class="sect2">
+<h3 id="metrics-overview">Metrics Overview</h3>
+<div class="paragraph">
+<p>The metrics exposed by the Aviate plugin can mainly be categorized as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>gauge - Gauge metrics return a single numerical value per minute/hour/day (based on the value of the <code>granularity</code> parameter)</p>
+</li>
+<li>
+<p>meter - Meter metrics provide the rate over time. They provide different data points for the following sample kinds:</p>
+<table id="meterics-overview-meter" class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Sample Kind</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">count</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Monotonic increasing value since last reboot.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">{one_minute/five_minute/fifteen_minute}_rate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rate through a window of time.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mean_rate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mean rate since last reboot.</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>timer - Timer metrics measures the rate of events and the duration of those events. They provide different data points for the following sample kinds:</p>
+<table id="meterics-overview-timer" class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Sample Kind</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mean_rate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">{one_minute/five_minute/fifteen_minute}_rate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">tp99, tp999, tp75, tp98, tp95</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">min</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">max</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">count</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">median</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">std_dev</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_queue_metrics">Queue Metrics</h3>
+<div class="paragraph">
+<p>Queue metrics can be used to assess the health of the Kill Bill internal queues.</p>
+</div>
+<div class="paragraph">
+<p>Kill Bill has its own internal queues used to dispatch events. Events that are dispatched right away as a result of some internal state being created or updated are called <strong>bus events</strong> - e.g. a subscription_creation event is generated as a result of creating a new subscription. Events that are scheduled to be dispatched in the future are called <strong>notifications</strong> - e.g. invoice scheduled on a periodic basis matching account settings and plan billing periods.  The health of these internal queues is critical to maintaining correct functioning of the system.</p>
+</div>
+<div class="paragraph">
+<p>Note that the queue metrics are <strong>global</strong> so the <code>nodeName</code> query parameter will be ignored. Additionally, all the queue metrics are gauge metrics and return a single value.</p>
+</div>
+<div class="paragraph">
+<p>The following table lists these metrics:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">queue.bus.late</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This is a counter that shows how many unprocessed bus events we have at time 't'. This number should be close to 0.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">queue.bus.incoming</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The is rate of incoming bus events at time t. The default granularity is <code>MINUTE</code> but results can be aggregated based on the <code>granularity</code> query parameter - e.g hourly incoming rate.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">queue.bus.processing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This is an estimation of the time in mSec that was used to process the bus event. These values may become incorrect once we have late bus entries.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">queue.notifications.late</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This is a counter that shows how many unprocessed notifications we have at time 't'. This number should be close to 0.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">queue.notifications.incoming</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The is rate of incoming notifications at time t. The default granularity is <code>MINUTE</code> but results can be aggregated based on the <code>granularity</code> query parameter - e.g hourly incoming rate.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">queue.notifications.processing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This is an estimation of the time in mSec that was used to process the notification. These values may become incorrect once we have late notifications.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_logs">Logs</h3>
+<div class="paragraph">
+<p>Kill Bill is configured to output its internal logs as specified by the <code>logback.xml</code> configuration (See <a href="https://docs.killbill.io/latest/getting_started#_customizing_log_file_path">docs</a>). The aviate plugin running on each node extracts important information from the logs and computes some metrics to highlight potential issues with warn and error logs that have happened through time.</p>
+</div>
+<div class="paragraph">
+<p>Note that the log metrics are computed per node. Additionally, the log metrics are all meter metrics, they each provide different data points for the sample kinds listed <a href="#meterics-overview-meter">above</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following table lists these metrics:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">logs.rates.warn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents warnings in logs</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">logs.rates.error</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents errors in logs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_servlet_responses">Servlet Responses</h3>
+<div class="paragraph">
+<p>Servlet metrics provide visibility into any of the endpoints exposed by the system, either from Kill Bill core (<code>/1.0/kb</code>) or any plugins exposing endpoints. These metrics are computed per node.</p>
+</div>
+<div class="paragraph">
+<p>The servlet metrics are <strong>global</strong> so the <code>nodeName</code> query parameter will be ignored. Additionally, the servlet metrics are meter metrics, they each provide different data points for the sample kinds listed <a href="#meterics-overview-meter">above</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following table lists these metrics:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servlets.responses.ok</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents successful responses.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servlets.responses.created</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents created responses.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servlets.responses.badRequest</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents bad request responses.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servlets.responses.noContent</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents no content responses.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servlets.responses.notFound</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents not found responses.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servlets.responses.serverError</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents server error responses.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servlets.responses.other</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Represents other responses.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_database_connection_pools">Database Connection Pools</h3>
+<div class="paragraph">
+<p>Kill Bill uses 3 different database connection pools: <code>main</code>, <code>shiro</code>, and <code>osgi</code>. <code>main</code> and <code>shiro</code> are internal connection pools within Kill Bill core. The <code>osgi</code> connection pool is used by the plugins running on top of the Kill Bill platform for any database calls.</p>
+</div>
+<div class="paragraph">
+<p>Note that, the connection pool metrics are computed per node. Additionally, the following metrics are gauge metrics and so return a single value:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">main.pool.TotalConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total (created) connections at time 't' for <code>main</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">main.pool.ActiveConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Active (in use) connections at time 't' for <code>main</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">main.pool.IdleConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Idle connections at time 't' for <code>main</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">osgi.pool.TotalConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total (created) connections at time 't' for <code>osgi</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">osgi.pool.ActiveConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Active (in use) connections at time 't' for <code>osgi</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">osgi.pool.IdleConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Idle connections at time 't' for <code>osgi</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shiro.pool.TotalConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Total (created) connections at time 't' for <code>shiro</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shiro.pool.ActiveConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Active (in use) connections at time 't' for <code>shiro</code> pool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shiro.pool.IdleConnections</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Idle connections at time 't' for <code>shiro</code> pool</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The following metrics are timer metrics and provide different data points for the sample kinds listed <a href="#meterics-overview-timer">above</a>:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">main.pool.Wait</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">osgi.pool.Wait</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shiro.pool.Wait</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TODO</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div></div><div class="bottom-nav-links"><a href="#" id="prev-nav-link" class="bottom-nav-link card prev"><span class="arrow-icon left"><svg class="i-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.19526 1.02876C4.45561 0.768409 4.87772 0.768409 5.13807 1.02876C5.39842 1.28911 5.39842 1.71122 5.13807 1.97157L2.27614 4.8335H11.3333C11.7015 4.8335 12 5.13197 12 5.50016C12 5.86835 11.7015 6.16683 11.3333 6.16683H2.27614L5.13807 9.02876C5.39842 9.28911 5.39842 9.71122 5.13807 9.97157C4.87772 10.2319 4.45561 10.2319 4.19526 9.97157L0.195261 5.97157C-0.0650883 5.71122 -0.0650883 5.28911 0.195261 5.02876L4.19526 1.02876Z" fill=""/></svg><span class="prev-text">Previous</span></span><span id="prev-navigator" class="bottom-nav-text">Prev</span>                               </a><a href="#" id="next-nav-link" class="bottom-nav-link card next"><span class="arrow-icon"><span class="next-text">Next</span><svg class="i-arrow icon-left" width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.19526 1.02876C4.45561 0.768409 4.87772 0.768409 5.13807 1.02876C5.39842 1.28911 5.39842 1.71122 5.13807 1.97157L2.27614 4.8335H11.3333C11.7015 4.8335 12 5.13197 12 5.50016C12 5.86835 11.7015 6.16683 11.3333 6.16683H2.27614L5.13807 9.02876C5.39842 9.28911 5.39842 9.71122 5.13807 9.97157C4.87772 10.2319 4.45561 10.2319 4.19526 9.97157L0.195261 5.97157C-0.0650883 5.71122 -0.0650883 5.28911 0.195261 5.02876L4.19526 1.02876Z" fill=""/></svg></span><span id="next-navigator" class="bottom-nav-text">Next</span></a></div></article></div><div class="bd-links-wrapper"><nav class="bd-links toc right-side-menu" id="myScrollspy" data-toggle="toc"></nav></div></div></div></div></div></main><script src="javascripts/jquery-3.6.1.min.js"></script><script src="javascripts/bootstrap.min.js"></script><script src="javascripts/bootstrap-toc.min.js"></script><script type="module" src="javascripts/kb.js"></script><script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script><script>docsearch({apiKey: '3ef227e7fd5e2e1a3fffd880484934bf', container: '#docsearch', appId: 'S2ISXITURI', indexName: 'killbill'});</script><script>
   jQuery(document).ready(function($){
     $('.sidebar-nav .icon-title').on('click', function (e) {
