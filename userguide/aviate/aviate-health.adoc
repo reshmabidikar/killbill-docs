@@ -31,4 +31,107 @@ Refer to the https://docs.killbill.io/latest/userguide_configuration.html[__Kill
 
 As mentioned earlier, Aviate Health exposes endpoints that allow monitoring the health of a KB installation and fixing problems if any. Once the aviate plugin is installed, you can start using the Aviate Health APIs. These are documented in our https://apidocs.killbill.io/aviate-health-apis[api docs].
 
+== Retrieve Diagnostic Report Examples
+
+The https://apidocs.killbill.io/aviate-health-apis#retrieve-diagnostic-report[Retrieve Diagnostic Report] endpoint generates a diagnostic report. Such a report, when shared with the Kill Bill team, allows the team to replicate a user's Kill Bill environment and diagnose issues.
+
+This section provides examples of generating the diagnostic report with various parameters.
+
+=== With Account Data Only
+
+In order to include the account data, the `accountId` parameter needs to be specified:
+
+[source, bash]
+----
+curl -X GET \
+     -H 'X-killbill-apiKey: bob' \
+     -H 'X-killbill-apisecret: lazar' \
+     -H "Accept: application/zip"  \
+     -H "Authorization: Bearer ${ID_TOKEN}" \
+     "http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42" -JO
+----
+
+This command generates a diagnostic file that includes a file called `account.data`. This has data from all the KB tables for the specified accountId.
+
+=== With Configuration Data
+
+The configuration data is controlled via the `withKillbillConfig`, `withTenantConfig` and the `withSystemConfig` query parameters:
+
+[source, bash]
+----
+curl -X GET \
+     -H 'X-killbill-apiKey: bob' \
+     -H 'X-killbill-apisecret: lazar' \
+     -H "Accept: application/zip"  \
+	 -H "Authorization: Bearer ${ID_TOKEN}" \
+     "http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=d0b3e0b9-f4bc-43d4-8001-1969b03b4555&withKillbillConfig=true&withTenantConfig=true" \
+	 -JO
+----
+
+This command generates a diagnostic file with the `killbill_configuration.data` (which includes the global KB configuration), and `tenant_config.data` (which includes the per-tenant configuration properties like catalog, overdue, etc.) files.
+
+
+=== With KB Logs
+
+In order to include the logs in the diagnostic file, the following parameters need to be specified:
+
+* withLogs=true
+* logsDir=path of the directory from which to include the log files
+* logsFilenames=name of the log file that needs to be included. A separate `logsFilenames` parameter needs to be specified corresponding to each log file.
+
+Depending on the type of KB installation, you can use different `curl` commands to include the KB logs.
+
+Here are some examples.
+
+==== Tomcat Setup
+
+*Example 1*
+
+On a Tomcat setup, the KB/Kaui logs are created in the directory specified in the `logback.xml` as explained https://docs.killbill.io/latest/getting_started#_customizing_log_file_path[here]. Thus, to include these logs, you need to specify the `logsDir` parameter with the path specified in `logback.xml` as follows:
+
+[source,bash]
+----
+curl -X GET \
+     -H 'X-killbill-apiKey: bob' \
+     -H 'X-killbill-apisecret: lazar' \
+     -H "Accept: application/zip"  \
+     -H "Authorization: Bearer ${ID_TOKEN}" \
+     "http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&withLogs=true&logsDir=/var/lib/killbill/&logsFilenames=killbill.out&logsFilenames=kaui.out" -JO
+----
+
+This command generates a diagnostic file with the account data and the `killbill.out`, `kaui.out` log files from the `/var/lib/killbill` directory.
+
+*Example 2*
+
+The `logsDir` parameter defaults to `$TOMCAT_HOME/logs`. Thus, to include the `catalina.out` from the Tomcat logs directory, you can use:
+
+[source, bash]
+----
+curl -X GET \
+     -H 'X-killbill-apiKey: bob' \
+     -H 'X-killbill-apisecret: lazar' \
+     -H "Accept: application/zip"  \
+     -H "Authorization: Bearer ${ID_TOKEN}" \
+     "http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&withLogs=true&logsFilenames=catalina.log" -JO
+----
+
+This  command generates a diagnostic file with the account data and the `catalina.log` file from the Tomcat home directory.
+
+==== Docker/AWS Setup
+
+In case of a Docker/AWS setup, KB/Kaui logs are created in the `$TOMCAT_HOME/logs` directory (which is `/var/lib/tomcat/logs`). Thus, there is no need to explicitly specify the `logsDir` parameter to include these logs. So you can use:
+
+[source, bash]
+----
+curl -X GET \
+-H 'X-killbill-apiKey: bob' \
+-H 'X-killbill-apisecret: lazar' \
+-H "Accept: application/zip"  \
+-H "Authorization: Bearer ${ID_TOKEN}" \
+"http://127.0.0.1:8081/plugins/aviate-plugin/v1/health/diagnostic?accountId=0dc4f698-c6cd-49c6-90e7-f745c70f96cb&withLogs=true&logsFilenames=killbill.out" -JO
+----
+
+This  command generates a diagnostic file with the account data and the `killbill.out` log file from the `/var/lib/tomcat/logs` directory.
+
+
 
