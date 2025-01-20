@@ -315,7 +315,7 @@ However, keeping that data completely static is a challenge because customers ma
 <p><strong>Templates and Translations</strong>: Kill Bill allows to configure the system using templates (e.g. invoice html visible to customer) and for <a href="https://docs.killbill.io/latest/internationalization.html">internationalization</a> (e.g translating plan names in different languages).</p>
 </li>
 <li>
-<p><strong>Payment plugins</strong>: Kill Bill typically interacts with a payment gateway or processor through a <a href="https://docs.killbill.io/latest/payment_plugin.html">playment plugin</a>. We already have quite a few tested integrations out there so the work is either to test one of our payment plugins or to write a new one to integrate with the desired gateway/processor.</p>
+<p><strong>Payment plugins</strong>: Kill Bill typically interacts with a payment gateway or processor through a <a href="https://docs.killbill.io/latest/payment_plugin.html">payment plugin</a>. We already have quite a few tested integrations out there so the work is either to test one of our payment plugins or to write a new one to integrate with the desired gateway/processor.</p>
 </li>
 <li>
 <p><strong>Overdue Configuration</strong>: Often called dunning in billing systems, this <a href="https://docs.killbill.io/latest/overdue.html">feature</a> lets you control what is happening when customers don&#8217;t pay. Note that there is no obligation to try reproducing existing logic from the old billing system if this one was not satisfactory as this will not directly impact migration. Instead it is advised to configure it to provide the desired results. This step could also be omitted and postponed until the end of the migration.</p>
