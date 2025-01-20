@@ -491,6 +491,141 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 </table>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_retrieve_diagnostic_report_examples">Retrieve Diagnostic Report Examples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="https://apidocs.killbill.io/aviate-health-apis#retrieve-diagnostic-report">Retrieve Diagnostic Report</a> endpoint generates a diagnostic report. Such a report, when shared with the Kill Bill team, allows the team to replicate a user&#8217;s Kill Bill environment and diagnose issues.</p>
+</div>
+<div class="paragraph">
+<p>This section provides examples of generating the diagnostic report with various parameters.</p>
+</div>
+<div class="sect2">
+<h3 id="_with_account_data_only">With Account Data Only</h3>
+<div class="paragraph">
+<p>In order to include the account data, the <code>accountId</code> parameter needs to be specified:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>curl<span class="tok-w"> </span>-X<span class="tok-w"> </span>GET<span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apiKey: bob&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&quot;</span><span class="tok-w"> </span>-JO</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command generates a diagnostic file that includes a file called <code>account.data</code>. This has data from all the KB tables for the specified accountId.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_with_configuration_data">With Configuration Data</h3>
+<div class="paragraph">
+<p>The configuration data is controlled via the <code>withKillbillConfig</code>, <code>withTenantConfig</code> and the <code>withSystemConfig</code> query parameters:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>curl<span class="tok-w"> </span>-X<span class="tok-w"> </span>GET<span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apiKey: bob&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
+<span class="tok-w">	 </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=d0b3e0b9-f4bc-43d4-8001-1969b03b4555&amp;withKillbillConfig=true&amp;withTenantConfig=true&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">	 </span>-JO</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command generates a diagnostic file with the <code>killbill_configuration.data</code> (which includes the global KB configuration), and <code>tenant_config.data</code> (which includes the per-tenant configuration properties like catalog, overdue, etc.) files.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_with_kb_logs">With KB Logs</h3>
+<div class="paragraph">
+<p>In order to include the logs in the diagnostic file, the following parameters need to be specified:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>withLogs=true</p>
+</li>
+<li>
+<p>logsDir=path of the directory from which to include the log files</p>
+</li>
+<li>
+<p>logsFilenames=name of the log file that needs to be included. A separate <code>logsFilenames</code> parameter needs to be specified corresponding to each log file.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Depending on the type of KB installation, you can use different <code>curl</code> commands to include the KB logs.</p>
+</div>
+<div class="paragraph">
+<p>Here are some examples.</p>
+</div>
+<div class="sect3">
+<h4 id="_tomcat_setup">Tomcat Setup</h4>
+<div class="paragraph">
+<p><strong>Example 1</strong></p>
+</div>
+<div class="paragraph">
+<p>On a Tomcat setup, the KB/Kaui logs are created in the directory specified in the <code>logback.xml</code> as explained <a href="https://docs.killbill.io/latest/getting_started#_customizing_log_file_path">here</a>. Thus, to include these logs, you need to specify the <code>logsDir</code> parameter with the path specified in <code>logback.xml</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>curl<span class="tok-w"> </span>-X<span class="tok-w"> </span>GET<span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apiKey: bob&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&amp;withLogs=true&amp;logsDir=/var/lib/killbill/&amp;logsFilenames=killbill.out&amp;logsFilenames=kaui.out&quot;</span><span class="tok-w"> </span>-JO</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This command generates a diagnostic file with the account data and the <code>killbill.out</code>, <code>kaui.out</code> log files from the <code>/var/lib/killbill</code> directory.</p>
+</div>
+<div class="paragraph">
+<p><strong>Example 2</strong></p>
+</div>
+<div class="paragraph">
+<p>The <code>logsDir</code> parameter defaults to <code>$TOMCAT_HOME/logs</code>. Thus, to include the <code>catalina.out</code> from the Tomcat logs directory, you can use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>curl<span class="tok-w"> </span>-X<span class="tok-w"> </span>GET<span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apiKey: bob&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&amp;withLogs=true&amp;logsFilenames=catalina.log&quot;</span><span class="tok-w"> </span>-JO</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This  command generates a diagnostic file with the account data and the <code>catalina.log</code> file from the Tomcat home directory.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_dockeraws_setup">Docker/AWS Setup</h4>
+<div class="paragraph">
+<p>In case of a Docker/AWS setup, KB/Kaui logs are created in the <code>$TOMCAT_HOME/logs</code> directory (which is <code>/var/lib/tomcat/logs</code>). Thus, there is no need to explicitly specify the <code>logsDir</code> parameter to include these logs. So you can use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>curl<span class="tok-w"> </span>-X<span class="tok-w"> </span>GET<span class="tok-w"> </span><span class="tok-se">\</span>
+-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apiKey: bob&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
+-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-s2">&quot;http://127.0.0.1:8081/plugins/aviate-plugin/v1/health/diagnostic?accountId=0dc4f698-c6cd-49c6-90e7-f745c70f96cb&amp;withLogs=true&amp;logsFilenames=killbill.out&quot;</span><span class="tok-w"> </span>-JO</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This  command generates a diagnostic file with the account data and the <code>killbill.out</code> log file from the <code>/var/lib/tomcat/logs</code> directory.</p>
+</div>
+</div>
+</div>
+</div>
 </div></div><div class="bottom-nav-links"><a href="#" id="prev-nav-link" class="bottom-nav-link card prev"><span class="arrow-icon left"><svg class="i-arrow" width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.19526 1.02876C4.45561 0.768409 4.87772 0.768409 5.13807 1.02876C5.39842 1.28911 5.39842 1.71122 5.13807 1.97157L2.27614 4.8335H11.3333C11.7015 4.8335 12 5.13197 12 5.50016C12 5.86835 11.7015 6.16683 11.3333 6.16683H2.27614L5.13807 9.02876C5.39842 9.28911 5.39842 9.71122 5.13807 9.97157C4.87772 10.2319 4.45561 10.2319 4.19526 9.97157L0.195261 5.97157C-0.0650883 5.71122 -0.0650883 5.28911 0.195261 5.02876L4.19526 1.02876Z" fill=""/></svg><span class="prev-text">Previous</span></span><span id="prev-navigator" class="bottom-nav-text">Prev</span>                               </a><a href="#" id="next-nav-link" class="bottom-nav-link card next"><span class="arrow-icon"><span class="next-text">Next</span><svg class="i-arrow icon-left" width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.19526 1.02876C4.45561 0.768409 4.87772 0.768409 5.13807 1.02876C5.39842 1.28911 5.39842 1.71122 5.13807 1.97157L2.27614 4.8335H11.3333C11.7015 4.8335 12 5.13197 12 5.50016C12 5.86835 11.7015 6.16683 11.3333 6.16683H2.27614L5.13807 9.02876C5.39842 9.28911 5.39842 9.71122 5.13807 9.97157C4.87772 10.2319 4.45561 10.2319 4.19526 9.97157L0.195261 5.97157C-0.0650883 5.71122 -0.0650883 5.28911 0.195261 5.02876L4.19526 1.02876Z" fill=""/></svg></span><span id="next-navigator" class="bottom-nav-text">Next</span></a></div></article></div><div class="bd-links-wrapper"><nav class="bd-links toc right-side-menu" id="myScrollspy" data-toggle="toc"></nav></div></div></div></div></div></main><script src="javascripts/jquery-3.6.1.min.js"></script><script src="javascripts/bootstrap.min.js"></script><script src="javascripts/bootstrap-toc.min.js"></script><script type="module" src="javascripts/kb.js"></script><script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script><script>docsearch({apiKey: '3ef227e7fd5e2e1a3fffd880484934bf', container: '#docsearch', appId: 'S2ISXITURI', indexName: 'killbill'});</script><script>
   jQuery(document).ready(function($){
     $('.sidebar-nav .icon-title').on('click', function (e) {
