@@ -551,10 +551,10 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 <p>withLogs=true</p>
 </li>
 <li>
-<p>logsDir=path of the directory from which to include the log files</p>
+<p>logsDir=path of the directory from which to include the log files. If unspecified, this defaults to the value of <code>com.killbill.billing.plugin.aviate.logsPath</code> property. If this property is not specified, it defaults to  <code>TOMCAT_HOME/logs</code>  where <code>TOMCAT_HOME</code> is determined via the <code>catalina.base</code> system property</p>
 </li>
 <li>
-<p>logsFilenames=name of the log file that needs to be included. A separate <code>logsFilenames</code> parameter needs to be specified corresponding to each log file.</p>
+<p>logsFilenames=name of the log file that needs to be included. If multiple log files are required, this parameter needs to be included multiple times corresponding to each log file as shown in the examples below. If unspecified, this defaults to <code>catalina.out</code>.</p>
 </li>
 </ul>
 </div>
@@ -586,10 +586,10 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 <p>This command generates a diagnostic file with the account data and the <code>killbill.out</code>, <code>kaui.out</code> log files from the <code>/var/lib/killbill</code> directory.</p>
 </div>
 <div class="paragraph">
-<p><strong>Example 2</strong></p>
+<p><strong>Example 2</strong>:</p>
 </div>
 <div class="paragraph">
-<p>The <code>logsDir</code> parameter defaults to <code>$TOMCAT_HOME/logs</code>. Thus, to include the <code>catalina.out</code> from the Tomcat logs directory, you can use:</p>
+<p>As explained earlier, if the <code>logsDir</code> parameter is not specified, it defaults to the value of the <code>com.killbill.billing.plugin.aviate.logsPath</code> property. Assuming that the KB log files are created in the <code>/var/lib/killbill/logs</code> directory and that the  <code>com.killbill.billing.plugin.aviate.logsPath=/var/lib/killbill/logs</code> property is set, you can use the following command to include the KB/Kaui log files:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -598,11 +598,49 @@ pre.pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */</style
 <span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
 <span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
 <span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
-<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&amp;withLogs=true&amp;logsFilenames=catalina.log&quot;</span><span class="tok-w"> </span>-JO</code></pre>
+<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&amp;withLogs=true&amp;logsFilenames=killbill.out&amp;logsFilenames=kaui.out&quot;</span><span class="tok-w"> </span>-JO</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This  command generates a diagnostic file with the account data and the <code>catalina.log</code> file from the Tomcat home directory.</p>
+<p>This command generates a diagnostic file with the account data and the <code>killbill.out</code>, <code>kaui.out</code> log files from the <code>/var/lib/killbill/logs</code> directory.</p>
+</div>
+<div class="paragraph">
+<p><strong>Example 3</strong></p>
+</div>
+<div class="paragraph">
+<p>If the <code>com.killbill.billing.plugin.aviate.logsPath</code> property is not set and the <code>logsDir</code> parameter is not specified, it defaults to the <code>TOMCAT_HOME/logs</code> directory. Thus, the <code>localhost.2025-01-01.log</code> file from the Tomcat logs directory can be included using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>curl<span class="tok-w"> </span>-X<span class="tok-w"> </span>GET<span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apiKey: bob&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&amp;withLogs=true&amp;logsFilenames=localhost.2025-01-01.log&quot;</span><span class="tok-w"> </span>-JO</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This  command generates a diagnostic file with the account data and the <code>localhost.2025-01-01.log</code> file from the Tomcat home directory.</p>
+</div>
+<div class="paragraph">
+<p><strong>Example 4</strong></p>
+</div>
+<div class="paragraph">
+<p>As mentioned earlier, if the <code>logsFilenames</code> parameter is not specified, it defaults to <code>catalina.out</code>. Thus, to include this file, you can use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="bash"><span></span>curl<span class="tok-w"> </span>-X<span class="tok-w"> </span>GET<span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apiKey: bob&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s1">&#39;X-killbill-apisecret: lazar&#39;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Accept: application/zip&quot;</span><span class="tok-w">  </span><span class="tok-se">\</span>
+<span class="tok-w">     </span>-H<span class="tok-w"> </span><span class="tok-s2">&quot;Authorization: Bearer </span><span class="tok-si">${</span><span class="tok-nv">ID_TOKEN</span><span class="tok-si">}</span><span class="tok-s2">&quot;</span><span class="tok-w"> </span><span class="tok-se">\</span>
+<span class="tok-w">     </span><span class="tok-s2">&quot;http://127.0.0.1:8080/plugins/aviate-plugin/v1/health/diagnostic?accountId=88edb5ba-d613-4923-84dc-b3cee1bf0b42&amp;withLogs=true&quot;</span><span class="tok-w"> </span>-JO</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This  command generates a diagnostic file with the account data and the <code>catalina.out</code> file from the Tomcat home directory.</p>
 </div>
 </div>
 <div class="sect3">
